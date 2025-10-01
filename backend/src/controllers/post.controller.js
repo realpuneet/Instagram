@@ -27,11 +27,7 @@ const createPost = async (req, res) => {
       tags,
     });
 
-    const updateUserPosts = await userModel.findByIdAndUpdate(req.user._id, {
-      posts: newPost._id,
-    });
-
-    if (!newPost) {
+    if (newPost) {
       return res
         .status(201)
         .json({ msg: "Post Created Successfully", post: newPost });

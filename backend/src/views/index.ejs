@@ -8,7 +8,10 @@
   <body>
     <div>
       <h1>Reset your password</h1>
-      <form action="http://localhost:3000/api/auth/update-password/<%=userData_id%>" method="post">
+      <% if (typeof message !== 'undefined') { %>
+        <p style="color: green;"><%= message %></p>
+      <% } %>
+      <form action="http://localhost:3000/api/auth/update-password" method="post">
         <input
           type="text"
           placeholder="New Password"
@@ -16,6 +19,7 @@
           required
         />
         <input type="text" placeholder="Confirm Password" required />
+        <input type="hidden" name="id" value="<%= userData_id %>" />
         <button type="submit">Update password</button>
       </form>
     </div>

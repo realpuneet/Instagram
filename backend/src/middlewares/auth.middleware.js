@@ -26,7 +26,7 @@ const authUser = async (req, res, next) => {
       });
     }
 
-    const user = await userModel.findOne(decoded.id);
+    const user = await userModel.findById(decoded.id);
 
     req.user = user;
     next();
