@@ -4,7 +4,7 @@ const {
   loginUser,
   logoutUser,
   forgetPassword,
-} = require("../controllers/user.controller");
+} = require("../controllers/auth.controller");
 
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/user.model");
