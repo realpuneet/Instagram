@@ -44,7 +44,7 @@ const getLoggedInUserPosts = async (req, res) => {
   }
 };
 
-const createPost = async (req, res) => {
+const createPostController = async (req, res) => {
   try {
     const { location, caption, tags } = req.body;
 
@@ -78,6 +78,49 @@ const createPost = async (req, res) => {
     return res.status(500).json({
       msg: "Internal Server Error!",
     });
+  }
+};
+
+const updatePostController = async (req, res) => {
+  try {
+    const { post_id, location, caption, url, tags } = req.body;
+
+    const updatePost = await postModel.findByIdAndUpdate(
+      { _id: post_id },
+      {
+        location,
+        caption,
+        imageUrl: url,
+        tags,
+      },
+      { new: true }
+    );
+
+    if (!updatePost) {
+      return res.status(400).json({ message: "Bad request, Failed to update" });
+    }
+
+    return res
+      .status(200)
+      .json({ message: "Post Updated!", updatePost: updatePost });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const deletePostController = async (req, res) => {
+  try {
+    const post_id = req.params.post_id;
+
+    if (!post_id) {
+      return res.status(404).json({ message: "Post Id not found" });
+    }
+
+    await postModel.findByIdAndDelete(post_id);
+
+    return res.status(200).json({ message: "Post Deleted Successfully" });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
@@ -134,7 +177,9 @@ const unlikeController = async (req, res) => {
 module.exports = {
   getAllPostsController,
   getLoggedInUserPosts,
-  createPost,
+  createPostController,
+  updatePostController,
+  deletePostController,
   likeController,
   unlikeController,
 };
