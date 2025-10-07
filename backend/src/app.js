@@ -20,9 +20,6 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
 //routes implementation
-
-
-
 app.use("/api/auth", userRouter);
 app.use("/api/post", postRouter);
 
