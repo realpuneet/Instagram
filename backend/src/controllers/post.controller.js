@@ -1,7 +1,48 @@
 const postModel = require("../models/post.model");
 const userModel = require("../models/user.model");
-
 const uploadFiles = require("../services/storage.service");
+
+const getAllPostsController = async (req, res) => {
+  try {
+    const posts = await postModel.find({});
+
+    if (!posts) {
+      return res.status(404).json({
+        msg: "No posts yet!",
+      });
+    }
+
+    return res.status(200).json({
+      msg: "All Post Fetched!",
+      posts: posts,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      msg: "Internal server error",
+    });
+  }
+};
+
+const getLoggedInUserPosts = async (req, res) => {
+  try {
+    const user_id = req.params.user._id;
+
+    if (!user_id) {
+      return res.status(404).json({ message: "User Id not found" });
+    }
+
+    const loggedInUserPosts = await userModel
+      .findById(req.user._id)
+      .populate("posts");
+
+    return res.status(200).json({
+      message: "logged in user posts fetched",
+      userPosts: loggedInUserPosts,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 const createPost = async (req, res) => {
   try {
@@ -40,6 +81,60 @@ const createPost = async (req, res) => {
   }
 };
 
+const likeController = async (req, res) => {
+  try {
+    const post_id = req.params.post_id;
+
+    if (!post_id) {
+      return res.status(404).json({
+        msg: "Post not found",
+      });
+    }
+
+    const currentPost = await postModel.findById(post_id);
+
+    currentPost.likes.push(req.user._id);
+    currentPost.save();
+
+    return res.status(200).json({
+      msg: "Post Liked",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      msg: "Internal Server Error",
+    });
+  }
+};
+
+const unlikeController = async (req, res) => {
+  try {
+    const post_id = req.params.post_id;
+
+    if (!post_id) {
+      return res.status(404).json({
+        msg: "post not found",
+      });
+    }
+
+    const currentPost = await postModel.findById(post_id);
+
+    currentPost.likes.splice(req.user_id, 1);
+    currentPost.save();
+
+    return res.status(200).json({
+      msg: "Post Unliked",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      msg: "Internal Server Error",
+    });
+  }
+};
+
 module.exports = {
-    createPost,
-}
+  getAllPostsController,
+  getLoggedInUserPosts,
+  createPost,
+  likeController,
+  unlikeController,
+};
