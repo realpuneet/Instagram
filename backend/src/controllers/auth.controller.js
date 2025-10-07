@@ -7,16 +7,22 @@ const jwt = require("jsonwebtoken");
 
 const registerUser = async (req, res) => {
   try {
-    const { fullName, username, email, mobile, password } = req.body;
+    const { fullName, username, email, password } = req.body;
 
-    if (!fullName || !username || !email || !password || !mobile) {
-      return res.status(422).json({
-        message: "All fields are required",
+    // Determine if email field contains email or mobile
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    const userEmail = isEmail ? email : null;
+    const mobile = !isEmail ? email : null;
+
+    // Validate that either email or mobile is provided
+    if (!userEmail && !mobile) {
+      return res.status(400).json({
+        message: "Either email or mobile number is required",
       });
     }
 
     const isUserAlreadyExist = await userModel.findOne({
-      $or: [{ email }, { username }, { mobile }],
+      $or: [{ email: userEmail }, { username }, { mobile }],
     });
 
     if (isUserAlreadyExist) {
@@ -28,7 +34,7 @@ const registerUser = async (req, res) => {
     const newUser = await userModel.create({
       fullName,
       username,
-      email,
+      email: userEmail,
       mobile,
       password,
     });
@@ -57,10 +63,14 @@ const registerUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email, username, mobile, password } = req.body;
+    const { emailOrUsername, password } = req.body;
 
     const user = await userModel.findOne({
-      $or: [{ email }, { username }, { mobile }],
+      $or: [
+        { email: emailOrUsername },
+        { username: emailOrUsername },
+        { mobile: emailOrUsername }
+      ],
     });
 
     if (!user) {

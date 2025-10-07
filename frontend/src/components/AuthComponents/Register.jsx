@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Eye, EyeOff } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
+import { userRegisterApi } from '../../features/actions/AuthActions';
 
 const Register = ({ setToggle }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [registerError, setRegisterError] = useState('');
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -17,10 +23,13 @@ const Register = ({ setToggle }) => {
   const password = watch('password');
 
   const onSubmit = async (data) => {
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log('Registration data:', data);
-    alert('Registration successful!');
+    setRegisterError('');
+    let res = await dispatch(userRegisterApi(data));
+    if (res.success) {
+      navigate('/home');
+    } else {
+      setRegisterError(res.error);
+    }
   };
 
   return (
@@ -66,9 +75,10 @@ const Register = ({ setToggle }) => {
               <input
                 {...register('email', {
                   required: 'Mobile number or email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address'
+                  validate: (value) => {
+                    const isEmail = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value);
+                    const isMobile = /^\+?[0-9]{10,15}$/.test(value);
+                    return isEmail || isMobile || 'Please enter a valid email or mobile number';
                   }
                 })}
                 type="text"
@@ -147,6 +157,13 @@ const Register = ({ setToggle }) => {
                 <p className="mt-1 text-xs text-red-400">{errors.username.message}</p>
               )}
             </div>
+
+            {/* Registration Error */}
+            {registerError && (
+              <div className="text-center">
+                <p className="text-xs text-red-400">{registerError}</p>
+              </div>
+            )}
 
             {/* Terms text */}
             <div className="mt-4 mb-4">
