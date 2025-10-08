@@ -21,4 +21,7 @@ router.get("/user-posts", authUser, getLoggedInUserPosts);
 router.get("/like/:post_id", authUser, likeController);
 router.get("/unlike/:post_id", authUser, unlikeController);
 
+
+
+
 module.exports = router;

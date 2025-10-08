@@ -85,8 +85,7 @@ const updatePostController = async (req, res) => {
   try {
     const { post_id, location, caption, url, tags } = req.body;
 
-    const updatePost = await postModel.findByIdAndUpdate(
-      { _id: post_id },
+    const updatePost = await postModel.findByIdAndUpdate( post_id ,
       {
         location,
         caption,
@@ -104,7 +103,9 @@ const updatePostController = async (req, res) => {
       .status(200)
       .json({ message: "Post Updated!", updatePost: updatePost });
   } catch (error) {
-    return res.status(500).json({ message: "Internal Server Error" });
+    console.log(error);
+    
+    return res.status(500).json({ message: "Internal Server Error hai" });
   }
 };
 
