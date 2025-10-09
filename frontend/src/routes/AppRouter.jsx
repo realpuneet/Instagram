@@ -6,38 +6,39 @@ import MessageLayout from "../layout/MessageLayout";
 import ExplorePage from "../pages/ExplorePage";
 import MessagePage from "../pages/MessagePage";
 import SearchPage from "../pages/SearchPage";
+import ProtectedRoute from "../components/AuthComponents/ProtectedRoute";
+import PublicRoute from "../components/AuthComponents/PublicRoute"; // 👈 new import
 
 const AppRouter = () => {
   const router = createBrowserRouter([
+    // 🟢 Public route (login/register)
     {
-      path: "/",
-      element: <AuthLayout />,
-    },
-    {
-      path: "/home",
-      element: <HomeLayout />,
+      element: <PublicRoute />,
       children: [
         {
-          path: "",
-          element: <HomePage />,
+          path: "/",
+          element: <AuthLayout />,
         },
+      ],
+    },
+
+    // 🔒 Protected routes (only after login)
+    {
+      element: <ProtectedRoute />,
+      children: [
         {
-          path: "explore",
-          element: <ExplorePage />,
-        },
-        {
-          path: "messages",
-          element: <MessageLayout />,
+          path: "/home",
+          element: <HomeLayout />,
           children: [
+            { path: "", element: <HomePage /> },
+            { path: "explore", element: <ExplorePage /> },
             {
-              path: "",
-              element: <MessagePage />,
+              path: "messages",
+              element: <MessageLayout />,
+              children: [{ path: "", element: <MessagePage /> }],
             },
+            { path: "search", element: <SearchPage /> },
           ],
-        },
-        {
-            path: "search",
-            element: <SearchPage/>
         },
       ],
     },

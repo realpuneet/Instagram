@@ -1,6 +1,6 @@
 import React from 'react'
 import { Outlet } from 'react-router'
-import SideMenu from '../components/SidebarComponents/SideMenu'
+import SideMenu from '../components/SidebarComponents/SideMenu';
 
 const HomeLayout = () => {
   return (

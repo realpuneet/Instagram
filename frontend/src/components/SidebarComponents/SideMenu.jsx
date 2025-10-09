@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Home,
   Search,
@@ -11,7 +11,10 @@ import {
   Menu,
   LayoutGrid,
 } from "lucide-react";
-import { NavLink as RouterNavLink, useLocation } from "react-router";
+import { NavLink as RouterNavLink, useLocation, useNavigate } from "react-router";
+import { useDispatch } from "react-redux";
+import { useState } from "react";
+import { logoutUserApi } from "../../features/actions/AuthActions";
 
 const navLinks = [
   { label: "Home", icon: Home, to: "/home" },
@@ -24,8 +27,27 @@ const navLinks = [
   { label: "Profile", icon: User, to: "/profile" },
 ];
 
-function SideMenu() {
+export default function SideMenu() {
   const location = useLocation();
+  const [loggedOut, setloggedOut] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const logoutUser = () => {
+    try {
+      dispatch(logoutUserApi());
+      console.log("User Logged Out");
+    } catch (error) {
+      console.log("error in logout ", error);
+    }
+  };
+
+  useEffect(() => {
+    if (loggedOut) {
+      navigate("/");
+      logoutUser();
+    }
+  }, [loggedOut]);
 
   // Only show these in mobile bottom nav
   const mobileNavLinks = [
@@ -49,7 +71,7 @@ function SideMenu() {
             <RouterNavLink
               key={label}
               to={to}
-              className={`group flex items-center gap-4 px-4 py-3 rounded-lg transition-all text-left w-full ${
+              className={`group flex text-sm items-center gap-4 px-4 py-3 rounded-lg transition-all text-left w-full ${
                 to === location.pathname
                   ? "font-bold text-white"
                   : "text-zinc-200 font-medium hover:bg-zinc-800 hover:text-white"
@@ -64,16 +86,24 @@ function SideMenu() {
                     : "text-zinc-400 group-hover:text-white"
                 }`}
               />
-              <span className={`transition-colors text-base ${
-                to === location.pathname
-                  ? "text-white"
-                  : "text-zinc-400 group-hover:text-white"
-              }`}>{label}</span>
+              <span
+                className={`transition-colors text-base ${
+                  to === location.pathname
+                    ? "text-white"
+                    : "text-zinc-400 group-hover:text-white"
+                }`}
+              >
+                {label}
+              </span>
               {label === "Notifications" && (
                 <span className="ml-auto h-2 w-2 rounded-full bg-pink-500" />
               )}
             </RouterNavLink>
           ))}
+          <button 
+          onClick={() => setloggedOut(true)}
+          className="text-red-500 text-lg"
+          >Logout</button>
         </div>
         <div className="border-t border-zinc-800 pt-4">
           <div className="flex items-center gap-3 px-4 py-2 text-zinc-200 hover:text-white cursor-pointer">
@@ -114,9 +144,14 @@ function SideMenu() {
               {/* No label on mobile */}
             </RouterNavLink>
           ))}
+
+        <button 
+          onClick={() => setloggedOut(true)}
+          className="text-red-500 text-lg"
+          >Logout</button>
       </nav>
     </>
   );
 }
 
-export default SideMenu;
+

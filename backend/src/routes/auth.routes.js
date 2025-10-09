@@ -4,7 +4,9 @@ const {
   loginUser,
   logoutUser,
   forgetPassword,
+  getCurrentUser,
 } = require("../controllers/auth.controller");
+const authUser = require("../middlewares/auth.middleware");
 
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/user.model");
@@ -31,6 +33,7 @@ router.get("/reset-password/:token", (req, res) => {
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/logout", logoutUser);
+router.get("/me", authUser, getCurrentUser);
 
 router.post("/forget-password", forgetPassword);
 router.post("/update-password", async (req, res) => {

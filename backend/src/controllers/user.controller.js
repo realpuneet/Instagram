@@ -1,5 +1,29 @@
 const userModel = require("../models/user.model");
 
+const getAllUsers = async (req, res) => {
+  try {
+    const currentUser = req.user._id;
+
+    const allUsers = await userModel.find({
+      _id: { $ne: currentUser },
+    });
+
+    if (!allUsers) {
+      return res.status(404).json({ message: "Multiple Users not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ 
+        message: "All Users Success Fetched", 
+        users: allUsers 
+      });
+
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 const followUser = async (req, res) => {
   try {
     let user_id = req.params.user_id;
@@ -75,16 +99,15 @@ const blockUser = async (req, res) => {
     currentUser.blockedUsers.push(user_id);
     currentUser.save();
 
-    return res.status(200).json({msg : "User Blocked"})
-    
+    return res.status(200).json({ msg: "User Blocked" });
   } catch (error) {}
 };
 
 // const unBlockUserController = async (req, res) => {};
 
-
 module.exports = {
-    followUser,
-    unfollowUser,
-    blockUser
-}
+  getAllUsers,
+  followUser,
+  unfollowUser,
+  blockUser,
+};

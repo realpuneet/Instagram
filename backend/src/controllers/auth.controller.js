@@ -94,7 +94,7 @@ const loginUser = async (req, res) => {
       user: user,
     });
   } catch (error) {
-    console.log(error);
+    console.log("Login error:", error);
     return res.status(500).json({
       message: "Internal Server Error",
       error: error,
@@ -126,6 +126,27 @@ const logoutUser = async (req, res) => {
     });
   }
 };
+
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = req.user;
+    if (!user) {
+      return res.status(401).json({
+        message: "Unauthorized",
+      });
+    }
+
+    return res.status(200).json({
+      user: user,
+    });
+  } catch (error) {
+    console.log("Get Current User Error", error);
+    return res.status(500).json({
+      msg: "Internal Server Error",
+    });
+  }
+};
+
 
 const forgetPassword = async (req, res) => {
   try {
@@ -172,4 +193,5 @@ module.exports = {
   loginUser,
   logoutUser,
   forgetPassword,
+  getCurrentUser,
 };
